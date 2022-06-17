@@ -6,10 +6,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 from selenium.common.exceptions import NoSuchElementException
-
 import random
-
 import pandas as pd
+from datetime import datetime
 
 
 PATH = "C:\Program Files (x86)\chromedriver.exe"
@@ -22,11 +21,9 @@ def startIndeedPage(search_term="developer"):
     elem = driver.find_element(By.NAME, "q")
     time.sleep(1)
     elem.send_keys(search_term)
-    # time.sleep(1)
     
     elem2 = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.NAME, 'l')))
     elem2.click()
-    # elem2.clear()
     for i in range(20):
         elem2.send_keys(Keys.BACKSPACE)
     elem2.send_keys("remote")
@@ -38,8 +35,7 @@ def scrapePages(jobPages=5):
     for i in range(jobPages):
         try:
             jobs = driver.find_elements(By.CLASS_NAME, "jobTitle")
-            # Randomize the process
-            print(type(jobs))
+            # Randomize clicking the jobs
             random.shuffle(jobs)
             for i in jobs:
                 i.click()
@@ -56,6 +52,7 @@ def scrapePages(jobPages=5):
 
                 driver.switch_to.default_content()
             
+            # Go to next page
             # next = driver.find_element(By.CLASS_NAME, "np")
             # next.click()
             # Check for popup
@@ -66,14 +63,14 @@ def scrapePages(jobPages=5):
             print("Something's not there, breaking from the loop")
     return df
 
-from datetime import datetime
+if __name__ == "__main__":
+    pages = 1
+    search_term = "developer"
+    now = datetime.now()
 
-pages = 1
-search_term = "developer"
-now = datetime.now()
-startIndeedPage(search_term)
-df = scrapePages(pages)
-df.to_csv("./"+str(pages)+"_"+search_term+"_"+now.strftime("%d_%m_%Y %H_%M_%S"))
+    startIndeedPage(search_term)
+    df = scrapePages(pages)
+    df.to_csv("./"+str(pages)+"_"+search_term+"_"+now.strftime("%d_%m_%Y %H_%M_%S"))
 
 # https://groups.google.com/g/selenium-users/c/W4s7KJbsEzc?pli=1
 # https://github.com/abhinavsingh/proxy.py
@@ -83,7 +80,6 @@ df.to_csv("./"+str(pages)+"_"+search_term+"_"+now.strftime("%d_%m_%Y %H_%M_%S"))
 # https://www.reddit.com/r/webscraping/comments/uxuleb/deploying_an_indeedcom_scraper_to_aws_lambdaec2/ia1uah9/
 # https://aws.amazon.com/blogs/architecture/serverless-architecture-for-a-structured-data-mining-solution/
 # https://aws.amazon.com/blogs/architecture/serverless-architecture-for-a-web-scraping-solution/
-# https://aws.amazon.com/blogs/architecture/emerging-solutions-for-operations-research-on-aws/
 
 # https://stackoverflow.com/questions/7263824/get-html-source-of-webelement-in-selenium-webdriver-using-python
 
